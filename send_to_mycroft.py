@@ -1,4 +1,5 @@
 from websocket import create_connection
+import json
 
 URL_TEMPLATE = "{scheme}://{host}:{port}{path}"
 
@@ -17,4 +18,5 @@ def send_message(message, host="192.168.0.41", port=8181, path="/core", scheme="
     ws.close()
 
 
-send_message('turn the nanoleaf on')
+#send_message('turn the nanoleaf on')
+send_message('speak, hello')
