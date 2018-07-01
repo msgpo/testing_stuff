@@ -1,5 +1,6 @@
 from websocket import create_connection
 import json
+import time
 
 URL_TEMPLATE = "{scheme}://{host}:{port}{path}"
 
@@ -19,4 +20,7 @@ def send_message(message, host="192.168.0.41", port=8181, path="/core", scheme="
 
 
 #send_message('turn the nanoleaf on')
-send_message('speak, hello')
+#send_message('turn the nanoleaf off')
+for x in range(0, 10):
+    send_message('speak, hello')
+    time.sleep(2)
