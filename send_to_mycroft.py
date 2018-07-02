@@ -18,9 +18,6 @@ def send_message(message, host="192.168.0.41", port=8181, path="/core", scheme="
     ws.send(payload)
     ws.close()
 
-
-#send_message('turn the nanoleaf on')
-#send_message('turn the nanoleaf off')
-for x in range(0, 10):
-    send_message('speak, hello')
-    time.sleep(2)
+# send any text command to mycroft here.
+send_message('speak, hello')
+ 
