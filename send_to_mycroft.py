@@ -29,8 +29,6 @@ send_message(socket_msg)
 time.sleep(1)
 
 
-
-
 # mute Command
 # send_message('please be silent')
 # time.sleep(1)
