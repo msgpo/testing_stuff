@@ -18,9 +18,26 @@ def send_message(message, host="192.168.0.41", port=8181, path="/core", scheme="
     ws.send(payload)
     ws.close()
 
+# mute Command
+send_message('please be silent')
+print('silent now')
+time.sleep(1)
 
-#send_message('turn the nanoleaf on')
-#send_message('turn the nanoleaf off')
-for x in range(0, 10):
-    send_message('speak, hello')
-    time.sleep(2)
+send_message('turn the room lights on')
+time.sleep(0.5)
+send_message('turn the wall lights on')
+time.sleep(10)
+send_message('set the room lights to 10 percent')
+time.sleep(10)
+send_message('turn the room lights off')
+send_message('set the wall lights to orange')
+time.sleep(10)
+send_message('set the wall lights to 2 percent')
+time.sleep(15)
+
+# un-mute Command
+send_message('you can speak now')
+print('no longer silent')
+time.sleep(1)
+
+
