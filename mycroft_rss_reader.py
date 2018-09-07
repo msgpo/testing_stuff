@@ -10,6 +10,8 @@ import sys
 feed_name = 'local news'
 url = 'https://kitchener.ctvnews.ca/rss/ctv-news-kitchener-1.822359'
 
+url = 'http://ice.nhl.com/rss/news.xml'
+
 # feed_name = sys.argv[1]
 # url = sys.argv[2]
 
