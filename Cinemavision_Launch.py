@@ -1,48 +1,71 @@
-import re
 import requests
+import time
 
 
-def __testing__(self):
-    def __init__():
-        self.kodi_ip = "192.168.0.32"
-        self.kodi_port = "8080"
-        self.kodi_user = ""
-        self.kodi_pass = ""
-        self.json_header = {'content-type': 'application/json'}
-        self.kodi_path = "http://"+self.kodi_user+":"+self.kodi_pass+"@"+self.kodi_ip+":"+self.kodi_port+"/jsonrpc"
+kodi_ip = "192.168.0.32"
+kodi_port = "8080"
+kodi_user = ""
+kodi_pass = ""
+json_header = {'content-type': 'application/json'}
+kodi_path = "http://"+kodi_user+":"+kodi_pass+"@"+kodi_ip+":"+kodi_port+"/jsonrpc"
+addon_name = "script.cinemavision"
+#  addon_name = "pmc"
 
-    def cv_play():
-        cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
+def cv_play():
+    cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
                        '"params": { "addonid": "script.cinemavision", "params": ["experience"]},  "id": 1}'
-        try:
-            cv_response = requests.post(self.kodi_path, data=cv_payload, headers=self.json_header)
-            print(cv_response.text)
-        except Exception as e:
-            print(e)
+    # select_payload = '{"jsonrpc": "2.0", "method": "Input.Select", "params": []},  "id": 1}'
+    select_payload = '{"jsonrpc": "2.0", "id": 1, "method": "Input.Select"}'
+    try:
+        cv_response = requests.post(kodi_path, data=cv_payload, headers=json_header)
+        print(cv_response.text)
+        if "OK" in cv_response.text:
+            time.sleep(5.5)
+            select_response = requests.post(kodi_path, data=select_payload, headers=json_header)
+            print(select_response.text)
+    except Exception as e:
+        print(e)
 
-    def kodi_play():
-        play_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}}'
-        try:
-            play_response = requests.post(self.kodi_path, data=play_payload, headers=self.json_header)
-            print(play_response.text)
-        except Exception as e:
-            print(e)
+def kodi_play():
+    play_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
 
-    def list_addons():
-        list_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
+    try:
+        play_response = requests.post(kodi_path, data=play_payload, headers=json_header)
+        print(play_response.text)
+    except Exception as e:
+        print(e)
+
+def list_addons():
+    list_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
                        ' "params": {"type": "xbmc.addon.executable"}, "id": "1"}'
-        try:
-            list_response = requests.post(self.kodi_path, data=list_payload, headers=self.json_header)
-            print(list_response.text)
-        except Exception as e:
-            print(e)
+    try:
+        list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+        return list_response.text
+    except Exception as e:
+        print(e)
+        return "NONE"
+
+def kodi_send_key():
+    key_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
+                       ' "params": {"type": "xbmc.addon.executable"}, "id": "1"}'
+    try:
+        list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+        return list_response.text
+    except Exception as e:
+        print(e)
+        return "NONE"
 
 
 
-    __init__()
-    # kodi_play()
-    # cv_play()
-    list_addons()
+# kodi_play()
+# cv_play()
+all_addons = list_addons()
+if addon_name in all_addons:
+    print("Found")
+    cv_play()
 
-__testing__
+else:
+    print("Not Found")
+    kodi_play()
+
 
