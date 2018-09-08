@@ -13,16 +13,11 @@ addon_name = "script.cinemavision"
 
 def cv_play():
     cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
-                       '"params": { "addonid": "script.cinemavision", "params": ["experience"]},  "id": 1}'
-    # select_payload = '{"jsonrpc": "2.0", "method": "Input.Select", "params": []},  "id": 1}'
+                       '"params": { "addonid": "script.cinemavision", "params": ["experience", "nodialog"]},  "id": 1}'
     select_payload = '{"jsonrpc": "2.0", "id": 1, "method": "Input.Select"}'
     try:
         cv_response = requests.post(kodi_path, data=cv_payload, headers=json_header)
         print(cv_response.text)
-        if "OK" in cv_response.text:
-            time.sleep(5.5)
-            select_response = requests.post(kodi_path, data=select_payload, headers=json_header)
-            print(select_response.text)
     except Exception as e:
         print(e)
 
