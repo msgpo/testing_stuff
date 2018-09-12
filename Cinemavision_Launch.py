@@ -14,7 +14,6 @@ addon_name = "script.cinemavision"
 def cv_play():
     cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
                        '"params": { "addonid": "script.cinemavision", "params": ["experience", "nodialog"]},  "id": 1}'
-    select_payload = '{"jsonrpc": "2.0", "id": 1, "method": "Input.Select"}'
     try:
         cv_response = requests.post(kodi_path, data=cv_payload, headers=json_header)
         print(cv_response.text)
@@ -23,7 +22,6 @@ def cv_play():
 
 def kodi_play():
     play_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
-
     try:
         play_response = requests.post(kodi_path, data=play_payload, headers=json_header)
         print(play_response.text)
@@ -40,9 +38,10 @@ def list_addons():
         print(e)
         return "NONE"
 
-def kodi_send_key():
-    key_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
-                       ' "params": {"type": "xbmc.addon.executable"}, "id": "1"}'
+def list_movies():
+    list_payload = '{ "jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", ' \
+                   '"params": { "properties": ["year", "premiered", "title"], ' \
+                   '"sort": { "order": "ascending", "method": "year" } }, "id": "movies" }'
     try:
         list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
         return list_response.text
@@ -51,16 +50,16 @@ def kodi_send_key():
         return "NONE"
 
 
-
 # kodi_play()
 # cv_play()
-all_addons = list_addons()
-if addon_name in all_addons:
-    print("Found")
-    cv_play()
+# all_addons = list_addons()
+# if addon_name in all_addons:
+#    print("Found")
+#    cv_play()
 
-else:
-    print("Not Found")
-    kodi_play()
+#else:
+#    print("Not Found")
+#    kodi_play()
 
-
+#list_movies()
+list_addons()
