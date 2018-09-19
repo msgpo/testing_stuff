@@ -12,14 +12,6 @@ addon_name = "script.cinemavision"
 #  addon_name = "pmc"
 
 
-def load_dirty_json(dirty_json):
-    regex_replace = [(r"([ \{,:\[])(u)?'([^']+)'", r'\1"\3"'), (r" False([, \}\]])", r' false\1'), (r" True([, \}\]])", r' true\1')]
-    for r, s in regex_replace:
-        dirty_json = re.sub(r, s, dirty_json)
-    clean_json = json.loads(dirty_json)
-    return clean_json
-
-
 def cv_play():
     method = "Addons.ExecuteAddon"
     cv_payload = {
@@ -41,7 +33,7 @@ def cv_play():
         print(e)
 
 
-def PlayMovieById(movieid):
+def play_movie_by_id(movieid):
     method = "Player.Open"
     json_params = {
         'jsonrpc': '2.0',
@@ -53,7 +45,11 @@ def PlayMovieById(movieid):
             }
         }
     }
-    print(json_params)
+    try:
+        play_response = requests.post(kodi_path, data=json.dumps(json_params), headers=json_header)
+        print(play_response.text)
+    except Exception as e:
+        print(e)
 
 
 def kodi_play():
@@ -218,11 +214,11 @@ def mute_kodi():
 
 
 # print(list_all_movies())
-print(find_movie_match('spider', list_all_movies()))
+# print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
 # print(show_popup())
 # print(clear_playlist())
 # print(add_playlist(1))
 # print(mute_kodi())
-# PlayMovieById(1)
+# play_movie_by_id(50)
 # print(get_movie_id('Arrival', list_all_movies()))
