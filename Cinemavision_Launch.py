@@ -213,6 +213,42 @@ def mute_kodi():
         return e
 
 
+def update_library():
+    method = "VideoLibrary.Scan"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": method,
+        "params": {
+            "showdialogs": True
+        }
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        # print(e)
+        return e
+
+
+def clean_library():
+    method = "VideoLibrary.Clean"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": method,
+        "params": {
+            "showdialogs": True
+        }
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        # print(e)
+        return e
+
+
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
@@ -222,3 +258,5 @@ def mute_kodi():
 # print(mute_kodi())
 # play_movie_by_id(50)
 # print(get_movie_id('Arrival', list_all_movies()))
+# update_library()
+clean_library()
