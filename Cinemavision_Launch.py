@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 
 kodi_ip = "192.168.0.32"
 kodi_port = "8080"
@@ -9,6 +10,14 @@ json_header = {'content-type': 'application/json'}
 kodi_path = "http://"+kodi_user+":"+kodi_pass+"@"+kodi_ip+":"+kodi_port+"/jsonrpc"
 addon_name = "script.cinemavision"
 #  addon_name = "pmc"
+
+
+def load_dirty_json(dirty_json):
+    regex_replace = [(r"([ \{,:\[])(u)?'([^']+)'", r'\1"\3"'), (r" False([, \}\]])", r' false\1'), (r" True([, \}\]])", r' true\1')]
+    for r, s in regex_replace:
+        dirty_json = re.sub(r, s, dirty_json)
+    clean_json = json.loads(dirty_json)
+    return clean_json
 
 
 def cv_play():
@@ -84,7 +93,7 @@ def list_addons():
         return "NONE"
 
 
-def list_movies():
+def list_all_movies():
     method = "VideoLibrary.GetMovies"
     list_payload = {
         "jsonrpc": "2.0",
@@ -92,23 +101,38 @@ def list_movies():
         "id": 1,
         "params": {
             "properties": [
-                "year",
-                "premiered",
-                "title"
             ],
-            "sort": {
-                "order": "ascending",
-                "method": "year"
-            }
         }
     }
     try:
         list_response = requests.post(kodi_path, data=json.dumps(list_payload), headers=json_header)
-        print(list_response["title"])
-        return list_response.text
+        the_movies = json.loads(list_response.text)["result"]["movies"]
+        return the_movies
     except Exception as e:
         print(e)
         return "NONE"
+
+
+def find_movie_match(movie_name, movie_list):
+    content = []
+    for movie in movie_list:
+        movie_title = str(movie['label'])
+        if movie_name.lower() in movie_title.lower():
+            print(movie['label'])
+            info = {
+                "label": movie['label'],
+                "movieid": movie['movieid']
+            }
+            content.append(info)
+    return content
+
+
+def get_movie_id(movie_name, movie_list):
+    movie_id = 'NONE'
+    for movie in movie_list:
+        if movie_name == movie['label']:
+            movie_id = movie['movieid']
+    return movie_id
 
 
 def show_popup():
@@ -193,10 +217,12 @@ def mute_kodi():
         return e
 
 
-# print(list_movies())
+# print(list_all_movies())
+print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
 # print(show_popup())
 # print(clear_playlist())
 # print(add_playlist(1))
 # print(mute_kodi())
 # PlayMovieById(1)
+# print(get_movie_id('Arrival', list_all_movies()))
