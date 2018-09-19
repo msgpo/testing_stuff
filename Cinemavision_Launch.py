@@ -1,4 +1,5 @@
 import requests
+import json
 
 kodi_ip = "192.168.0.32"
 kodi_port = "8080"
@@ -25,7 +26,7 @@ def cv_play():
         }
     }
     try:
-        cv_response = requests.post(kodi_path, data=cv_payload, headers=json_header)
+        cv_response = requests.post(kodi_path, data=json.dumps(cv_payload), headers=json_header)
         print(cv_response.text)
     except Exception as e:
         print(e)
@@ -59,7 +60,7 @@ def kodi_play():
         }
     }
     try:
-        play_response = requests.post(kodi_path, data=play_payload, headers=json_header)
+        play_response = requests.post(kodi_path, data=json.dumps(play_payload), headers=json_header)
         print(play_response.text)
     except Exception as e:
         print(e)
@@ -75,7 +76,7 @@ def list_addons():
         }
     }
     try:
-        list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+        list_response = requests.post(kodi_path, data=json.dumps(list_payload), headers=json_header)
         return list_response.text
     except Exception as e:
         print(e)
@@ -87,16 +88,21 @@ def list_movies():
     list_payload = {
         "jsonrpc": "2.0",
         "method": method,
-        "id": "movies",
+        "id": 1,
         "params": {
-            "properties": ["year", "premiered", "title"],
+            "properties": [
+                "year",
+                "premiered",
+                "title"
+            ],
             "sort": {
-                "order": "ascending", "method": "year"
+                "order": "ascending",
+                "method": "year"
             }
         }
     }
     try:
-        list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+        list_response = requests.post(kodi_path, data=json.dumps(list_payload), headers=json_header)
         return list_response.text
     except Exception as e:
         print(e)
@@ -108,6 +114,7 @@ def show_popup():
     list_payload ={
         "jsonrpc": "2.0",
         "method": method,
+        "id": 1,
         "params": {
             "addonid": "script.popup",
             "params": {
@@ -120,7 +127,7 @@ def show_popup():
         }
     }
     try:
-        list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+        list_response = requests.post(kodi_path, data=json.dumps(list_payload), headers=json_header)
         return list_response.text
     except Exception as e:
         # print(e)
@@ -131,14 +138,14 @@ def clear_playlist():
     method = "Playlist.Clear"
     kodi_payload = {
         "jsonrpc": "2.0",
-        "id": 1,
         "method": method,
+        "id": 1,
         "params": {
             "playlistid": 1
         }
     }
     try:
-        kodi_response = requests.post(kodi_path, data=kodi_payload, headers=json_header)
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         return kodi_response.text
     except Exception as e:
         # print(e)
@@ -159,7 +166,7 @@ def add_playlist(movieid):
         }
     }
     try:
-        kodi_response = requests.post(kodi_path, data=kodi_payload, headers=json_header)
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         return kodi_response.text
     except Exception as e:
         # print(e)
@@ -177,7 +184,7 @@ def mute_kodi():
         }
     }
     try:
-        kodi_response = requests.post(kodi_path, data=kodi_payload, headers=json_header)
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         return kodi_response.text
     except Exception as e:
         # print(e)
@@ -188,6 +195,6 @@ def mute_kodi():
 # print(list_addons())
 # print(show_popup())
 # print(clear_playlist())
-# print(add_playlist())
+print(add_playlist(1))
 # print(mute_kodi())
-PlayMovieById(1)
+# PlayMovieById(1)
