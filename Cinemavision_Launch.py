@@ -65,6 +65,7 @@ def kodi_play():
     except Exception as e:
         print(e)
 
+
 def list_addons():
     method = "Addons.GetAddons"
     list_payload = {
@@ -103,6 +104,7 @@ def list_movies():
     }
     try:
         list_response = requests.post(kodi_path, data=json.dumps(list_payload), headers=json_header)
+        print(list_response["title"])
         return list_response.text
     except Exception as e:
         print(e)
@@ -195,6 +197,6 @@ def mute_kodi():
 # print(list_addons())
 # print(show_popup())
 # print(clear_playlist())
-print(add_playlist(1))
+# print(add_playlist(1))
 # print(mute_kodi())
 # PlayMovieById(1)
