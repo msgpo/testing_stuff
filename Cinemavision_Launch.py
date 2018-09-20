@@ -338,15 +338,14 @@ def subtitles_on():
     method = "Player.SetSubtitle"
     kodi_payload = {
         "jsonrpc": "2.0",
+        "id": 1,
         "method": method,
         "params": {
             "playerid": 1,
-            "subtitle": {
-                "enable": True
-            },
-        },
-        "id": 1
+            "subtitle": "on"
+        }
     }
+
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         return kodi_response.text
@@ -358,12 +357,14 @@ def subtitles_off():
     method = "Player.SetSubtitle"
     kodi_payload = {
         "jsonrpc": "2.0",
+        "id": 1,
         "method": method,
         "params": {
             "playerid": 1,
-            "subtitle": False},
-        "id": 1
+            "subtitle": "off"
+        }
     }
+
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         print(kodi_response.text)
@@ -371,6 +372,29 @@ def subtitles_off():
 
     except Exception as e:
         return e
+
+
+def show_recently_added():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "video",
+            "parameters": [
+                "videodb: //recentlyaddedmovies/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
@@ -382,6 +406,7 @@ def subtitles_off():
 # update_library()
 # clean_library()
 # reboot_kodi()
-print(subtitles_on())
+# print(subtitles_on())
+print(show_recently_added())
 
 
