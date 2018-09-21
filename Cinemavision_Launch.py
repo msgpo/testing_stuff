@@ -416,7 +416,128 @@ def show_movies_genre():
         return e
 
 
+def show_movies_actors():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/actors/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
 
+
+def show_movies_studios():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/studios/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def show_movies_title():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/titles/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def show_movies_sets():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/sets/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def show_root():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "library://video/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
+def show_movies():
+    show_root()
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
 
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
@@ -429,7 +550,11 @@ def show_movies_genre():
 # update_library()
 # clean_library()
 # reboot_kodi()
-# print(subtitles_on())
-print(show_recently_added())
-
-
+print(subtitles_on())
+# print(show_movies_added())
+# print(show_movies_genre())
+# print(show_movies_actors())
+# print(show_movies_studios())
+# print(show_movies_title())
+# print(show_movies_sets())
+# print(show_movies())
