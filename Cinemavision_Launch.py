@@ -367,7 +367,6 @@ def subtitles_off():
 
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        print(kodi_response.text)
         return kodi_response.text
 
     except Exception as e:
@@ -543,6 +542,26 @@ def show_movies():
         return e
 
 
+def get_active_player():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": "Player.GetActivePlayers",
+        "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        parse_response = json.loads(kodi_response.text)
+        print(parse_response["result"])
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
+
+
+
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
@@ -554,7 +573,8 @@ def show_movies():
 # update_library()
 # clean_library()
 # reboot_kodi()
-print(subtitles_on())
+# print(subtitles_on())
+# print(subtitles_off())
 # print(show_movies_added())
 # print(show_movies_genre())
 # print(show_movies_actors())
@@ -562,3 +582,7 @@ print(subtitles_on())
 # print(show_movies_title())
 # print(show_movies_sets())
 # print(show_movies())
+# print(skip_fwd())
+# print(skip_rev())
+# print(stop_movie())
+print(get_active_player())
