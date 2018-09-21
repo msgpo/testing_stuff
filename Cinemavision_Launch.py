@@ -457,6 +457,7 @@ def show_movies_studios():
     except Exception as e:
         return e
 
+
 def show_movies_title():
     method = "GUI.ActivateWindow"
     kodi_payload = {
@@ -477,6 +478,7 @@ def show_movies_title():
     except Exception as e:
         return e
 
+
 def show_movies_sets():
     method = "GUI.ActivateWindow"
     kodi_payload = {
@@ -496,6 +498,7 @@ def show_movies_sets():
         return kodi_response.text
     except Exception as e:
         return e
+
 
 def show_root():
     method = "GUI.ActivateWindow"
@@ -538,6 +541,7 @@ def show_movies():
         return kodi_response.text
     except Exception as e:
         return e
+
 
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
