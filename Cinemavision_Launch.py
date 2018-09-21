@@ -394,6 +394,7 @@ def show_movies_added():
     except Exception as e:
         return e
 
+
 def show_movies_genre():
     method = "GUI.ActivateWindow"
     kodi_payload = {
