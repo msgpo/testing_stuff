@@ -374,15 +374,15 @@ def subtitles_off():
         return e
 
 
-def show_recently_added():
+def show_movies_added():
     method = "GUI.ActivateWindow"
     kodi_payload = {
         "jsonrpc": "2.0",
         "method": method,
         "params": {
-            "window": "video",
+            "window": "videos",
             "parameters": [
-                "videodb: //recentlyaddedmovies/"
+                "videodb://recentlyaddedmovies/"
             ]
         },
         "id": "1"
@@ -393,6 +393,28 @@ def show_recently_added():
         return kodi_response.text
     except Exception as e:
         return e
+
+def show_movies_genre():
+    method = "GUI.ActivateWindow"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "window": "videos",
+            "parameters": [
+                "videodb://movies/genres/"
+            ]
+        },
+        "id": "1"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
 
 
 # print(list_all_movies())
