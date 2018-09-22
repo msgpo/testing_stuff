@@ -345,12 +345,14 @@ def subtitles_on():
             "subtitle": "on"
         }
     }
-
-    try:
-        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        return kodi_response.text
-    except Exception as e:
-        return e
+    if is_kodi_playing():
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            return kodi_response.text
+        except Exception as e:
+            return e
+    else:
+        return "kodi not playing"
 
 
 def subtitles_off():
@@ -364,13 +366,14 @@ def subtitles_off():
             "subtitle": "off"
         }
     }
-
-    try:
-        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        return kodi_response.text
-
-    except Exception as e:
-        return e
+    if is_kodi_playing():
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            return kodi_response.text
+        except Exception as e:
+            return e
+    else:
+        return "Kodi not playing"
 
 
 def show_movies_added():
@@ -542,7 +545,7 @@ def show_movies():
         return e
 
 
-def get_active_player():
+def is_kodi_playing():
     method = "GUI.ActivateWindow"
     kodi_payload = {
         "jsonrpc": "2.0",
@@ -551,10 +554,12 @@ def get_active_player():
     }
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        parse_response = json.loads(kodi_response.text)
-        print(parse_response["result"])
-        print(kodi_response.text)
-        return kodi_response.text
+        parse_response = json.loads(kodi_response.text)["result"]
+        if not parse_response:
+            playing_status = False
+        else:
+            playing_status = True
+        return playing_status
     except Exception as e:
         return e
 
