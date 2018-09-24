@@ -631,7 +631,7 @@ def push_kodi_notification(message):
         return e
 
 
-def search_youtube(text):
+def search_youtube_music(text):
     query = urllib.parse.quote(text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
@@ -639,22 +639,31 @@ def search_youtube(text):
     soup = BeautifulSoup(html, "html.parser")
     yt_links = soup.find_all("a", class_=" yt-uix-sessionlink spf-link ")
     for yt_link in yt_links:
-        if "/playlist?list=" in str(yt_link):
-            return extract_link_id(str(yt_link))
+        try:
+            pl_link_temp = extract_music_link(str(yt_link))
+            if pl_link_temp:
+                pl_link = pl_link_temp
+        except:
+            print(str(yt_link))
+    return pl_link
 
 
-def extract_link_id(link):
+def extract_music_link(link):
+    # print(link)
     regx_filter = r"href=\"\/playlist\?list\=(.*)\"\>View all</a>"
     all_matches = re.finditer(regx_filter, link, re.MULTILINE | re.DOTALL)
     for match in all_matches:
+        match_id = match.group(1)
+    if match_id:
         return match.group(1)
+    else:
+        return "none"
 
 
 def play_youtube_video(VideoID):
     method = "Player.Open"
-    yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + VideoID
+    yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + VideoID + "&play=1&order=shuffle"
     # yt_link = "plugin://plugin.video.youtube/play/?video_id=" + VideoID
-    print(yt_link)
     kodi_payload = {
         "jsonrpc": "2.0",
         "params": {
@@ -667,14 +676,36 @@ def play_youtube_video(VideoID):
     }
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        if "OK" in kodi_response:
+            show_context_menu()
         return kodi_response.text
     except Exception as e:
         return e
 
 
-# print(search_youtube("caleb and kelsey"))
-# print(play_youtube_video(search_youtube("third day playlist")))
-print(search_youtube("third day"))
+def show_context_menu():
+    method = "Input.ContextMenu"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def alt_youtube_search(my_search):
+    query_string = urllib.parse.urlencode({"search_query": my_search})
+    html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
+    search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
+    print("http://www.youtube.com/watch?v=" + search_results[0])
+
+
+# my_id = search_youtube_music("owl city")
+# print(play_youtube_video(my_id))
+print(alt_youtube_search("captain marvel official trailer"))
 # print(push_kodi_notification("this is a test"))
 # print(move_cursor("down"))
 # print(show_movie_info())
