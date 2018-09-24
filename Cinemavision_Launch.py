@@ -1,5 +1,13 @@
 import requests
 import json
+import random
+
+import urllib.error
+import urllib.parse
+import urllib.request
+from bs4 import BeautifulSoup
+import re
+
 
 kodi_ip = "192.168.0.32"
 kodi_port = "8080"
@@ -258,11 +266,12 @@ def skip_fwd():
         },
         "id": 1
     }
-    try:
-        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        return kodi_response.text
-    except Exception as e:
-        return e
+    if is_kodi_playing():
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            return kodi_response.text
+        except Exception as e:
+            return e
 
 
 def skip_rev():
@@ -276,11 +285,12 @@ def skip_rev():
         },
         "id": 1
     }
-    try:
-        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
-        return kodi_response.text
-    except Exception as e:
-        return e
+    if is_kodi_playing():
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            return kodi_response.text
+        except Exception as e:
+            return e
 
 
 def pause_movie():
@@ -546,7 +556,7 @@ def show_movies():
 
 
 def is_kodi_playing():
-    method = "GUI.ActivateWindow"
+    method = "Player.GetActivePlayers"
     kodi_payload = {
         "jsonrpc": "2.0",
         "method": "Player.GetActivePlayers",
@@ -559,14 +569,116 @@ def is_kodi_playing():
             playing_status = False
         else:
             playing_status = True
+        print("Kodi Playing Status:", playing_status)
         return playing_status
     except Exception as e:
         return e
 
 
 
+def random_movie_select():
+    full_list = list_all_movies()
+    random_id = random.randint(1,len(full_list))
+    selected_entry = full_list[random_id]
+    selected_name = selected_entry['label']
+    selected_id = selected_entry['movieid']
+    print(selected_name, selected_id)
+
+def show_movie_info():
+    method = "Input.Info"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
 
 
+
+def move_cursor(dir):
+    method = "Input." +dir.capitalize()
+    print(method)
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def push_kodi_notification(message):
+    method = "GUI.ShowNotification"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "title": "uTorrent",
+            "message": message
+        },
+        "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
+def search_youtube(text):
+    query = urllib.parse.quote(text)
+    url = "https://www.youtube.com/results?search_query=" + query
+    response = urllib.request.urlopen(url)
+    html = response.read()
+    soup = BeautifulSoup(html, "html.parser")
+    yt_links = soup.find_all("a", class_=" yt-uix-sessionlink spf-link ")
+    for yt_link in yt_links:
+        if "/playlist?list=" in str(yt_link):
+            return extract_link_id(str(yt_link))
+
+
+def extract_link_id(link):
+    regx_filter = r"href=\"\/playlist\?list\=(.*)\"\>View all</a>"
+    all_matches = re.finditer(regx_filter, link, re.MULTILINE | re.DOTALL)
+    for match in all_matches:
+        return match.group(1)
+
+
+def play_youtube_video(VideoID):
+    method = "Player.Open"
+    yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + VideoID
+    # yt_link = "plugin://plugin.video.youtube/play/?video_id=" + VideoID
+    print(yt_link)
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "params": {
+            "item": {
+                "file": yt_link
+            }
+        },
+        "method": method,
+        "id": "libPlayer"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+
+# print(search_youtube("caleb and kelsey"))
+# print(play_youtube_video(search_youtube("third day playlist")))
+print(search_youtube("third day"))
+# print(push_kodi_notification("this is a test"))
+# print(move_cursor("down"))
+# print(show_movie_info())
+# random_movie_select()
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(list_addons())
@@ -590,4 +702,4 @@ def is_kodi_playing():
 # print(skip_fwd())
 # print(skip_rev())
 # print(stop_movie())
-print(get_active_player())
+# print(is_kodi_playing())
