@@ -631,21 +631,24 @@ def push_kodi_notification(message):
         return e
 
 
-def search_youtube_music(text):
+def search_youtube(text):
     query = urllib.parse.quote(text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
     html = response.read()
     soup = BeautifulSoup(html, "html.parser")
+    temp_results = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
+    video_results = list(set(temp_results))
+    # video_results = temp_results
+    print(str(video_results))
     yt_links = soup.find_all("a", class_=" yt-uix-sessionlink spf-link ")
     for yt_link in yt_links:
-        try:
-            pl_link_temp = extract_music_link(str(yt_link))
-            if pl_link_temp:
-                pl_link = pl_link_temp
-        except:
-            print(str(yt_link))
-    return pl_link
+        temp_results = re.findall(r'href=\"\/playlist\?list\=(.*)\"\>View all</a>', yt_link.decode())
+        playlist_results = list(set(temp_results))
+        # playlist_results = temp_results
+        if playlist_results:
+            print(str(playlist_results))
+    # return pl_link
 
 
 def extract_music_link(link):
@@ -700,12 +703,15 @@ def alt_youtube_search(my_search):
     query_string = urllib.parse.urlencode({"search_query": my_search})
     html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
     search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
-    print("http://www.youtube.com/watch?v=" + search_results[0])
+    # print("http://www.youtube.com/watch?v=" + search_results[0])
+    # print(len(search_results()))
+    return search_results[0]
 
-
-# my_id = search_youtube_music("owl city")
+my_id = search_youtube("third day")
+print(my_id)
+# print(alt_youtube_search("owl city"))
 # print(play_youtube_video(my_id))
-print(alt_youtube_search("captain marvel official trailer"))
+# print(alt_youtube_search("captain marvel official trailer"))
 # print(push_kodi_notification("this is a test"))
 # print(move_cursor("down"))
 # print(show_movie_info())
