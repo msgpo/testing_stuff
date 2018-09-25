@@ -703,8 +703,9 @@ def show_context_menu():
 
 def play_some_regex(req_string):
     temp_results = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*) from youtube', req_string)
-    item_result = temp_results.group(temp_results.lastgroup)
-    print(item_result)
+    if temp_results:
+        item_result = temp_results.group(temp_results.lastgroup)
+        print(item_result)
 
 play_some_regex("play some captain marvel trailer from youtube")
 # my_id = search_youtube("captain marvel official trailer")
