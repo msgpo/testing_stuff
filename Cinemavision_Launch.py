@@ -631,36 +631,30 @@ def push_kodi_notification(message):
         return e
 
 
-def search_youtube(text):
-    query = urllib.parse.quote(text)
+def search_youtube(search_text):
+    playlist_results = []
+    query = urllib.parse.quote(search_text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
     html = response.read()
     soup = BeautifulSoup(html, "html.parser")
     temp_results = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
     video_results = list(set(temp_results))
-    # video_results = temp_results
-    print(str(video_results))
+    # print(str(video_results))
     yt_links = soup.find_all("a", class_=" yt-uix-sessionlink spf-link ")
-    for yt_link in yt_links:
-        temp_results = re.findall(r'href=\"\/playlist\?list\=(.*)\"\>View all</a>', yt_link.decode())
-        playlist_results = list(set(temp_results))
-        # playlist_results = temp_results
-        if playlist_results:
-            print(str(playlist_results))
-    # return pl_link
-
-
-def extract_music_link(link):
-    # print(link)
-    regx_filter = r"href=\"\/playlist\?list\=(.*)\"\>View all</a>"
-    all_matches = re.finditer(regx_filter, link, re.MULTILINE | re.DOTALL)
-    for match in all_matches:
-        match_id = match.group(1)
-    if match_id:
-        return match.group(1)
+    for each_link in yt_links:
+        temp_results = re.findall(r'href=\"\/playlist\?list\=(.*)\"\>View all</a>', each_link.decode())
+        if temp_results:
+            playlist_results.append(temp_results)
+    if playlist_results:
+        yt_link = random.choice(playlist_results)
     else:
-        return "none"
+        if "official" in search_text:
+            yt_link = video_results[0]
+        else:
+            yt_link = random.choice(video_results)
+    print(yt_link)
+    # return yt_link
 
 
 def play_youtube_video(VideoID):
@@ -699,16 +693,8 @@ def show_context_menu():
     except Exception as e:
         return e
 
-def alt_youtube_search(my_search):
-    query_string = urllib.parse.urlencode({"search_query": my_search})
-    html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
-    search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
-    # print("http://www.youtube.com/watch?v=" + search_results[0])
-    # print(len(search_results()))
-    return search_results[0]
 
-my_id = search_youtube("third day")
-print(my_id)
+my_id = search_youtube("captain marvel official trailer")
 # print(alt_youtube_search("owl city"))
 # print(play_youtube_video(my_id))
 # print(alt_youtube_search("captain marvel official trailer"))
