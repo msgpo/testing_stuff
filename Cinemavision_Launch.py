@@ -633,6 +633,7 @@ def push_kodi_notification(message):
 
 def search_youtube(search_text):
     playlist_results = []
+    yt_link = []
     query = urllib.parse.quote(search_text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
@@ -647,20 +648,27 @@ def search_youtube(search_text):
         if temp_results:
             playlist_results.append(temp_results)
     if playlist_results:
-        yt_link = random.choice(playlist_results)
+        temp_link = random.choice(playlist_results)
+        yt_link = temp_link[0]
     else:
         if "official" in search_text:
             yt_link = video_results[0]
         else:
-            yt_link = random.choice(video_results)
+            temp_link = random.choice(video_results)
+            yt_link = temp_link[0]
     print(yt_link)
+    print(len(yt_link))
     # return yt_link
 
 
-def play_youtube_video(VideoID):
+def play_youtube_video(video_id):
     method = "Player.Open"
-    yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + VideoID + "&play=1&order=shuffle"
-    # yt_link = "plugin://plugin.video.youtube/play/?video_id=" + VideoID
+    # Playlist links are 34 characters long
+    # individual links are 11 characters long
+    if len(video_id) > 30:
+        yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + video_id + "&play=1&order=shuffle"
+    else:
+        yt_link = "plugin://plugin.video.youtube/play/?video_id=" + video_id
     kodi_payload = {
         "jsonrpc": "2.0",
         "params": {
