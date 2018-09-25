@@ -701,8 +701,13 @@ def show_context_menu():
     except Exception as e:
         return e
 
+def play_some_regex(req_string):
+    temp_results = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*) from youtube', req_string)
+    item_result = temp_results.group(temp_results.lastgroup)
+    print(item_result)
 
-my_id = search_youtube("captain marvel official trailer")
+play_some_regex("play some captain marvel trailer from youtube")
+# my_id = search_youtube("captain marvel official trailer")
 # print(alt_youtube_search("owl city"))
 # print(play_youtube_video(my_id))
 # print(alt_youtube_search("captain marvel official trailer"))
