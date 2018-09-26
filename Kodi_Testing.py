@@ -631,34 +631,36 @@ def push_kodi_notification(message):
         return e
 
 
-def search_youtube(search_text):
-    playlist_results = []
-    yt_link = []
+def get_youtube_links(search_list):
+    search_text = str(search_list[0])
     query = urllib.parse.quote(search_text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
     html = response.read()
-    soup = BeautifulSoup(html, "html.parser")
-    temp_results = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
-    video_results = list(set(temp_results))
-    # print(str(video_results))
-    yt_links = soup.find_all("a", class_=" yt-uix-sessionlink spf-link ")
-    for each_link in yt_links:
-        temp_results = re.findall(r'href=\"\/playlist\?list\=(.*)\"\>View all</a>', each_link.decode())
-        if temp_results:
-            playlist_results.append(temp_results)
-    if playlist_results:
-        temp_link = random.choice(playlist_results)
-        yt_link = temp_link[0]
-    else:
-        if "official" in search_text:
-            yt_link = video_results[0]
-        else:
-            temp_link = random.choice(video_results)
-            yt_link = temp_link[0]
-    print(yt_link)
-    print(len(yt_link))
-    # return yt_link
+    # Get all video links from page
+    temp_links = []
+    all_video_links = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
+    for each_video in all_video_links:
+        if each_video not in temp_links:
+            temp_links.append(each_video)
+    video_links = temp_links
+    # Get all playlist links from page
+    temp_links = []
+    all_playlist_results = re.findall(r'href=\"\/playlist\?list\=(.{34})', html.decode())
+    for each_playlist in all_playlist_results:
+        if each_playlist not in temp_links:
+            temp_links.append(each_playlist)
+    playlist_links = temp_links
+    # print(video_links)
+    # print(playlist_links)
+    yt_links = []
+    if video_links:
+        yt_links.append(video_links[0])
+    if playlist_links:
+        yt_links.append(playlist_links[0])
+    # print(yt_links)
+    # print(len(yt_links))
+    return yt_links
 
 
 def play_youtube_video(video_id):
@@ -701,16 +703,30 @@ def show_context_menu():
     except Exception as e:
         return e
 
-def play_some_regex(req_string):
-    temp_results = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*) from youtube', req_string)
+def find_search_regex(req_string):
+    return_list = []
+    pri_regex = re.search(r'play (?P<item1>.*) from youtube', req_string)
+    sec_regex = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*)from youtube', req_string)
+    if pri_regex:
+        if sec_regex:  # more items requested
+            multiple = True
+            temp_results = sec_regex
+        else:  # single item requested
+            multiple = False
+            temp_results = pri_regex
     if temp_results:
         item_result = temp_results.group(temp_results.lastgroup)
-        print(item_result)
+        return_list = item_result, multiple
+        # print(return_list)
+        return return_list
 
-play_some_regex("play some captain marvel trailer from youtube")
-# my_id = search_youtube("captain marvel official trailer")
-# print(alt_youtube_search("owl city"))
+
+my_search = find_search_regex("play captain marvel official trailer from youtube")
+my_id = get_youtube_links(my_search)
+print(my_id)
 # print(play_youtube_video(my_id))
+
+# print(alt_youtube_search("owl city"))
 # print(alt_youtube_search("captain marvel official trailer"))
 # print(push_kodi_notification("this is a test"))
 # print(move_cursor("down"))
