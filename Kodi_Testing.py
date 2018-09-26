@@ -80,12 +80,14 @@ def kodi_play():
 
 def list_addons():
     method = "Addons.GetAddons"
+    addon_video = "xbmc.addon.video"
+    addon_executable = "xbmc.addon.executable"
     kodi_payload = {
         "jsonrpc": "2.0",
         "method": method,
         "id": "1",
         "params": {
-            "type": "xbmc.addon.executable"
+            "type": addon_video
         }
     }
     try:
@@ -721,9 +723,9 @@ def find_search_regex(req_string):
         return return_list
 
 
-my_search = find_search_regex("play captain marvel official trailer from youtube")
-my_id = get_youtube_links(my_search)
-print(my_id)
+# my_search = find_search_regex("play captain marvel official trailer from youtube")
+# my_id = get_youtube_links(my_search)
+# print(my_id)
 # print(play_youtube_video(my_id))
 
 # print(alt_youtube_search("owl city"))
@@ -734,7 +736,12 @@ print(my_id)
 # random_movie_select()
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
-# print(list_addons())
+all_addons = list_addons()
+if "plugin.video.youtube" in all_addons:
+    print("found")
+else:
+    print("not found")
+
 # print(clear_playlist())
 # print(add_playlist(1))
 # print(mute_kodi())
