@@ -98,6 +98,49 @@ def list_addons():
         return "NONE"
 
 
+def check_youtube_addon():
+    method = "Addons.GetAddons"
+    addon_video = "xbmc.addon.video"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "id": "1",
+        "params": {
+            "type": addon_video
+        }
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+    except Exception as e:
+        print(e)
+        return False
+    if "plugin.video.youtube" in kodi_response.text:
+        return True
+    else:
+        return False
+
+def check_cinemavision_addon():
+    method = "Addons.GetAddons"
+    addon_video = "xbmc.addon.executable"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "id": "1",
+        "params": {
+            "type": addon_video
+        }
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+    except Exception as e:
+        print(e)
+        return False
+    if "script.cinemavision" in kodi_response.text:
+        return True
+    else:
+        return False
+
+
 def list_all_movies():
     method = "VideoLibrary.GetMovies"
     kodi_payload = {
@@ -736,12 +779,8 @@ def find_search_regex(req_string):
 # random_movie_select()
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
-all_addons = list_addons()
-if "plugin.video.youtube" in all_addons:
-    print("found")
-else:
-    print("not found")
-
+# print(check_youtube_addon())
+print(check_cinemavision_addon())
 # print(clear_playlist())
 # print(add_playlist(1))
 # print(mute_kodi())

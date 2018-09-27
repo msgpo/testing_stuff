@@ -6,11 +6,8 @@ url = "http://live.nhle.com/GameData/RegularSeasonScoreboardv3.jsonp"
 
 
 def get_game_data():
-    today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1)
-    tomorrow = today + datetime.timedelta(days=1)
-    print(yesterday, today, tomorrow)
     today_options = "TODAY", "progress", "LIVE"
+    todays_games = []
     nhl_data = requests.get(url)
     nhl_json_data = nhl_data.text[15:-1]
     try:
@@ -19,13 +16,17 @@ def get_game_data():
         print('Error processing Json File')
     game_list = output['games']
     game_count = 0
-    # print(game_list)
     for each_game in game_list:
         live_options = each_game['ts'], each_game['tsc'], each_game['bs'], each_game['bsc']
         if set(today_options).intersection(live_options):
-            print(each_game['atn'], each_game['atv'], each_game['ats'], each_game['htn'], each_game['htv'], each_game['hts'])
+            if each_game['ats'] > each_game['hts']:
+                todays_games.append([each_game['atn'], each_game['atv'], each_game['ats'], each_game['htn'],
+                                     each_game['htv'], each_game['hts']])
+            else:
+                todays_games.append([each_game['htn'], each_game['htv'], each_game['hts'], each_game['atn'],
+                                     each_game['atv'], each_game['ats']])
             game_count += 1
-    print("There are " + str(game_count) +" games today.")
+    return todays_games
 
-get_game_data()
+print(get_game_data())
 
