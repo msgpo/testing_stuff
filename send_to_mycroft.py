@@ -1,4 +1,5 @@
 import sys
+import pickle
 from websocket import create_connection
 import json
 import time
@@ -8,11 +9,13 @@ URL_TEMPLATE = "{scheme}://{host}:{port}{path}"
 
 socket_host = "192.168.0.41" #this should be the ip address of the mycroft device on the local network
 socket_port = 8181 #this port should match the client port
-socket_msg = sys.argv[1]
+hyperion_host = "192.168.0.32" #this should be the ip address of the mycroft device on the local network
+hyperion_port = 19444 #this port should match the client port
 
 
-def send_message(message, host=socket_host, port=socket_port, path="/core", scheme="ws"):
-    payload = json.dumps({
+
+def send_message(message, host=socket_host, port=socket_port, path="/core", scheme="tcp"):
+    payload = pickle.dumps({
         "type": "recognizer_loop:utterance",
         "context": "",
         "data": {
@@ -24,9 +27,22 @@ def send_message(message, host=socket_host, port=socket_port, path="/core", sche
     ws.send(payload)
     ws.close()
 
+def send_hyperion(host=hyperion_host, port=hyperion_port, path="/core", scheme="ws"):
+    payload = '{"command": "effect","effect": {"name": "Knight rider","args": {"color": [255,0,0], "fadeFactor": 0.7,' \
+              '"speed": 1}}, "priority":50,"duration":5000}'
+    # payload = '{"command": "color", "priority": 50, "color": [255,255,255], "duration": 14400000}'
+    url = URL_TEMPLATE.format(scheme=scheme, host=host, port=str(port), path=path)
+    ws = create_connection(url)
+    ws.send(payload)
+    ws.close()
 
-send_message(socket_msg)
-time.sleep(1)
+
+send_hyperion()
+
+#send_message(socket_msg)
+#time.sleep(1)
+
+
 
 
 # mute Command

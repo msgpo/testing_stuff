@@ -8,13 +8,19 @@ import urllib.request
 from bs4 import BeautifulSoup
 import re
 
-
+json_header = {'content-type': 'application/json'}
 kodi_ip = "192.168.0.32"
 kodi_port = "8080"
 kodi_user = ""
 kodi_pass = ""
-json_header = {'content-type': 'application/json'}
 kodi_path = "http://"+kodi_user+":"+kodi_pass+"@"+kodi_ip+":"+kodi_port+"/jsonrpc"
+
+hyper_ip = "192.168.0.32"
+hyper_port = "19444"
+hyper_user = ""
+hyper_pass = ""
+hyper_path = "http://"+hyper_ip+":"+hyper_port+"/jsonrpc"
+
 addon_name = "script.cinemavision"
 #  addon_name = "pmc"
 
@@ -292,6 +298,22 @@ def shutdown_kodi():
         "jsonrpc": "2.0",
         "method": method,
         "id": 1
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        return kodi_response.text
+    except Exception as e:
+        return e
+
+def kodi_send_text(text):
+    method = "Input.SendText"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": method,
+        "params": {
+            "text": text
+        }
     }
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
@@ -677,7 +699,9 @@ def push_kodi_notification(message):
 
 
 def get_youtube_links(search_list):
-    search_text = str(search_list[0])
+    print(search_list)
+    search_text = str(search_list)
+    print(search_text)
     query = urllib.parse.quote(search_text)
     url = "https://www.youtube.com/results?search_query=" + query
     response = urllib.request.urlopen(url)
@@ -686,18 +710,19 @@ def get_youtube_links(search_list):
     temp_links = []
     all_video_links = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
     for each_video in all_video_links:
+        print(each_video)
         if each_video not in temp_links:
             temp_links.append(each_video)
     video_links = temp_links
     # Get all playlist links from page
     temp_links = []
     all_playlist_results = re.findall(r'href=\"\/playlist\?list\=(.{34})', html.decode())
+    sep = '"'
     for each_playlist in all_playlist_results:
         if each_playlist not in temp_links:
-            temp_links.append(each_playlist)
+            cleaned_pl = each_playlist.split(sep, 1)[0]
+            temp_links.append(cleaned_pl)
     playlist_links = temp_links
-    # print(video_links)
-    # print(playlist_links)
     yt_links = []
     if video_links:
         yt_links.append(video_links[0])
@@ -734,6 +759,24 @@ def play_youtube_video(video_id):
     except Exception as e:
         return e
 
+def stop_youtube():
+    method = "Player.Stop"
+    kodi_payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": {
+            "playerid": 1
+        },
+        "id": "libPlayer"
+    }
+    try:
+        kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        if "OK" in kodi_response:
+            show_context_menu()
+        return kodi_response.text
+    except Exception as e:
+        return e
+
 
 def show_context_menu():
     method = "Input.ContextMenu"
@@ -748,29 +791,47 @@ def show_context_menu():
     except Exception as e:
         return e
 
-def find_search_regex(req_string):
+def youtube_query_regex(req_string):
     return_list = []
     pri_regex = re.search(r'play (?P<item1>.*) from youtube', req_string)
     sec_regex = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*)from youtube', req_string)
     if pri_regex:
         if sec_regex:  # more items requested
-            multiple = True
+            # multiple = True
             temp_results = sec_regex
         else:  # single item requested
-            multiple = False
+            # multiple = False
             temp_results = pri_regex
     if temp_results:
         item_result = temp_results.group(temp_results.lastgroup)
-        return_list = item_result, multiple
+        return_list = item_result
         # print(return_list)
         return return_list
 
 
-# my_search = find_search_regex("play captain marvel official trailer from youtube")
+def connect_to_websocket():
+    hyper_payload = {
+        "color": [255, 255, 255],
+        "command": "color",
+        "priority": 100
+    }
+    try:
+        hyper_response = requests.put(hyper_path, data=json.dumps(hyper_payload), headers=json_header)
+        print(hyper_response.text)
+    except Exception as e:
+        print(e)
+
+
+print(connect_to_websocket())
+
+# my_search = youtube_query_regex("play third day from youtube")
+# print(my_search)
 # my_id = get_youtube_links(my_search)
 # print(my_id)
+# print(len(my_id))
 # print(play_youtube_video(my_id))
 
+# print(stop_youtube())
 # print(alt_youtube_search("owl city"))
 # print(alt_youtube_search("captain marvel official trailer"))
 # print(push_kodi_notification("this is a test"))
@@ -780,7 +841,7 @@ def find_search_regex(req_string):
 # print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(check_youtube_addon())
-print(check_cinemavision_addon())
+# print(check_cinemavision_addon())
 # print(clear_playlist())
 # print(add_playlist(1))
 # print(mute_kodi())
