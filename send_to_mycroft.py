@@ -3,6 +3,7 @@ import pickle
 from websocket import create_connection
 import json
 import time
+import asyncio
 
 URL_TEMPLATE = "{scheme}://{host}:{port}{path}"
 
@@ -27,13 +28,16 @@ def send_message(message, host=socket_host, port=socket_port, path="/core", sche
     ws.send(payload)
     ws.close()
 
+
 def send_hyperion(host=hyperion_host, port=hyperion_port, path="/core", scheme="ws"):
-    payload = '{"command": "effect","effect": {"name": "Knight rider","args": {"color": [255,0,0], "fadeFactor": 0.7,' \
-              '"speed": 1}}, "priority":50,"duration":5000}'
     # payload = '{"command": "color", "priority": 50, "color": [255,255,255], "duration": 14400000}'
+    payload = '{"command":"serverinfo"}'
+
     url = URL_TEMPLATE.format(scheme=scheme, host=host, port=str(port), path=path)
     ws = create_connection(url)
     ws.send(payload)
+    greeting = await ws.recv()
+    print(f"< {greeting}")
     ws.close()
 
 
