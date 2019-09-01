@@ -160,6 +160,7 @@ def list_all_movies():
     }
     try:
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        print(kodi_response.text)
         movie_list = json.loads(kodi_response.text)["result"]["movies"]
         return movie_list
     except Exception as e:
@@ -822,15 +823,13 @@ def connect_to_websocket():
         print(e)
 
 
-print(connect_to_websocket())
-
+# print(connect_to_websocket())
 # my_search = youtube_query_regex("play third day from youtube")
 # print(my_search)
 # my_id = get_youtube_links(my_search)
 # print(my_id)
 # print(len(my_id))
 # print(play_youtube_video(my_id))
-
 # print(stop_youtube())
 # print(alt_youtube_search("owl city"))
 # print(alt_youtube_search("captain marvel official trailer"))
@@ -838,7 +837,7 @@ print(connect_to_websocket())
 # print(move_cursor("down"))
 # print(show_movie_info())
 # random_movie_select()
-# print(list_all_movies())
+print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(check_youtube_addon())
 # print(check_cinemavision_addon())
