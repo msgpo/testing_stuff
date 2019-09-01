@@ -162,6 +162,7 @@ def list_all_movies():
         kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
         print(kodi_response.text)
         movie_list = json.loads(kodi_response.text)["result"]["movies"]
+        print(json.loads(kodi_response.text)["result"]["limits"]["total"])
         return movie_list
     except Exception as e:
         print(e)
@@ -837,7 +838,7 @@ def connect_to_websocket():
 # print(move_cursor("down"))
 # print(show_movie_info())
 # random_movie_select()
-print(list_all_movies())
+# print(list_all_movies())
 # print(find_movie_match('spider', list_all_movies()))
 # print(check_youtube_addon())
 # print(check_cinemavision_addon())
