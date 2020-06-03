@@ -1,0 +1,12 @@
+{
+	"stations": [
+		{
+			"name": "680 news",
+			"url": "https://pmd.680news.com/podcasts/traffic/680traffic.mp3"
+		},
+		{
+			"name": "570 news",
+			"url": "https://pmd.570news.com/audio/traffic/570TRAFFIC.mp3"
+		}
+	]
+}
